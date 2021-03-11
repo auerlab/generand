@@ -59,7 +59,7 @@ int     gen_vcf(int argc, char *argv[])
 		    chr,
 		    ref,
 		    alt,
-		    samples = 5,
+		    samples = 1,
 		    c,
 		    qual,
 		    ref_ad,
@@ -103,7 +103,7 @@ int     gen_vcf(int argc, char *argv[])
 	    {
 		genotype = hets[random()%2];
 		ref_ad = random() % 30;
-		alt_ad = random() % 30;
+		alt_ad = random() % (ref_ad + 1);
 		dp = ref_ad + alt_ad;
 		printf("\t%s:%u,%u:%u", genotype, ref_ad, alt_ad, dp);
 	    }
