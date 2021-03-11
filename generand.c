@@ -21,6 +21,9 @@ void    usage(char *argv[]);
 int     main(int argc,char *argv[])
 
 {
+    if ( argc < 3 )
+	usage(argv);
+
     if ( strcmp(argv[1], "vcf") == 0 )
 	return gen_vcf(argc, argv);
     else
@@ -70,11 +73,11 @@ int     gen_vcf(int argc, char *argv[])
     if ( argc != 4 )
 	usage(argv);
     
-    chromosomes = strtoul(argv[1], &end, 10);
+    chromosomes = strtoul(argv[2], &end, 10);
     if ( *end != '\0' )
 	usage(argv);
     
-    calls_per_chromosome = strtoul(argv[2], &end, 10);
+    calls_per_chromosome = strtoul(argv[3], &end, 10);
     if ( *end != '\0' )
 	usage(argv);
     
