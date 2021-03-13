@@ -15,8 +15,16 @@
 #include <time.h>
 #include <string.h>
 
+#define RNAME_MAX   1024
+
+typedef enum { FASTA, FASTQ } fast_t;
+
 int     gen_vcf(int argc, char *argv[]);
+int     gen_sam(int argc, char *argv[]);
 void    usage(char *argv[]);
+void    gen_seq(unsigned long len);
+void    gen_phred(unsigned long len);
+int     gen_reads(int argc, char *argv[], fast_t file_type);
 
 int     main(int argc,char *argv[])
 
@@ -26,9 +34,15 @@ int     main(int argc,char *argv[])
 
     if ( strcmp(argv[1], "vcf") == 0 )
 	return gen_vcf(argc, argv);
+    else if ( strcmp(argv[1], "sam") == 0 )
+	return gen_sam(argc, argv);
+    else if ( strcmp(argv[1], "fasta") == 0 )
+	return gen_reads(argc, argv, FASTA);
+    else if ( strcmp(argv[1], "fastq") == 0 )
+	return gen_reads(argc, argv, FASTQ);
     else
     {
-	fprintf(stderr, "%s: %s: Not yet implemented.\n", argv[0], argv[1]);
+	fprintf(stderr, "%s: %s: Unsupported format.\n", argv[0], argv[1]);
 	return EX_UNAVAILABLE;
     }
 }
@@ -114,10 +128,180 @@ int     gen_vcf(int argc, char *argv[])
 }
 
 
+/***************************************************************************
+ *  Description:
+ *      Generate a random SAM file
+ *
+ *  History: 
+ *  Date        Name        Modification
+ *  2021-03-12  Jason Bacon Begin
+ ***************************************************************************/
+
+int     gen_sam(int argc, char *argv[])
+
+{
+    char    *qname = "*",           // Unknown template for now
+	    rname[RNAME_MAX + 1],   // Generated from chromosome loop var
+	    *cigar = "*",
+	    *rnext = "*",
+	    *sam_version = "1.6",
+	    *end;
+    unsigned int    flag = 0x10,    // All properly aligned for now
+		    mapq,           // Randomized
+		    pnext = 0,      // Unavailable for now
+		    tlen = 0,       // Undefined for now
+		    chromosomes,
+		    chr;
+    unsigned long   pos = 0,
+		    alignments_per_chromosome,
+		    alignment,
+		    max_alignment_separation = 1000,
+		    seq_len = 100;  // Allow user to specify eventually
+    
+    if ( argc != 4 )
+	usage(argv);
+    
+    chromosomes = strtoul(argv[2], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    alignments_per_chromosome = strtoul(argv[3], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    printf("@HD VN:%s SO:coordinate\n", sam_version);
+    srandom(time(NULL));
+    for (chr = 1; chr <= chromosomes; ++chr)
+    {
+	for (alignment = 0, pos = 0; alignment < alignments_per_chromosome; ++alignment)
+	{
+	    snprintf(rname, RNAME_MAX, "chr%u", chr);
+	    pos += random() % max_alignment_separation;
+	    mapq = random() % 40;
+	    printf("%s\t%u\t%s\t%lu\t%u\t%s\t%s\t%u\t%u\t",
+		    qname, flag, rname, pos, mapq, cigar, rnext,
+		    pnext, tlen);
+	    gen_seq(seq_len);
+	    putchar('\t');
+	    gen_phred(seq_len);
+	    putchar('\n');
+	}
+    }
+    return EX_OK;
+}
+
+
+/***************************************************************************
+ *  Description:
+ *      Generatea random nucleotide sequence of the given length
+ *
+ *  History: 
+ *  Date        Name        Modification
+ *  2021-03-12  Jason Bacon Begin
+ ***************************************************************************/
+
+void    gen_seq(unsigned long len)
+
+{
+    static char *nucleotides = "ACGT";
+    unsigned long   c;
+    
+    for (c = 0; c < len; ++c)
+	putchar(nucleotides[random()%4]);
+}
+
+
+/***************************************************************************
+ *  Description:
+ *      Generatea random phred sequence of the given length
+ *
+ *  History: 
+ *  Date        Name        Modification
+ *  2021-03-12  Jason Bacon Begin
+ ***************************************************************************/
+
+void    gen_phred(unsigned long len)
+
+{
+    unsigned long   c,
+		    reps;
+    int             ch;
+    
+    /*
+     *  FIXME: Generate a more realistic distribution than uniform
+     */
+    for (c = 0; c < len;)
+    {
+	reps = random() % (len / 2);
+	ch = random()%40 + 33;
+	while ( (reps > 0) && (c < len) )
+	{
+	    putchar(ch);
+	    --reps;
+	    ++c;
+	}
+    }
+}
+
+
+/***************************************************************************
+ *  Description:
+ *      Generate a random FASTA stream
+ *
+ *  History: 
+ *  Date        Name        Modification
+ *  2021-03-12  Jason Bacon Begin
+ ***************************************************************************/
+
+int     gen_reads(int argc, char *argv[], fast_t file_type)
+
+{
+    char            *end;
+    unsigned long   reads,
+		    len,
+		    c;
+    
+    if ( argc != 4 )
+	usage(argv);
+    
+    reads = strtoul(argv[2], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    len = strtoul(argv[3], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    switch(file_type)
+    {
+	case    FASTA:
+	    for (c = 0; c < reads; ++c)
+	    {
+		printf(">seq%lu\n", c);
+		gen_seq(len);
+		putchar('\n');
+	    }
+	    break;
+	case    FASTQ:
+	    for (c = 0; c < reads; ++c)
+	    {
+		printf("@seq%lu\n", c);
+		gen_seq(len);
+		putchar('\n');
+		printf("+seq%lu\n", c);
+		gen_phred(len);
+		putchar('\n');
+	    }
+	    break;
+    }
+    return EX_OK;
+}
+
+
 void    usage(char *argv[])
 
 {
-    fprintf(stderr, "Usage: %s fasta|fastq reads\n", argv[0]);
+    fprintf(stderr, "Usage: %s fasta|fastq reads length\n", argv[0]);
     fprintf(stderr, "       %s sam|vcf chromosomes lines_per_chromosome\n",
 	    argv[0]);
     exit(EX_USAGE);
