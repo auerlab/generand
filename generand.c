@@ -156,9 +156,9 @@ int     gen_sam(int argc, char *argv[])
 		    alignments_per_chromosome,
 		    alignment,
 		    max_alignment_separation = 1000,
-		    seq_len = 100;  // Allow user to specify eventually
+		    seq_len;        // Required command line arg
     
-    if ( argc != 4 )
+    if ( argc != 5 )
 	usage(argv);
     
     chromosomes = strtoul(argv[2], &end, 10);
@@ -166,6 +166,10 @@ int     gen_sam(int argc, char *argv[])
 	usage(argv);
     
     alignments_per_chromosome = strtoul(argv[3], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    seq_len = strtoul(argv[4], &end, 10);
     if ( *end != '\0' )
 	usage(argv);
     
@@ -229,17 +233,29 @@ void    gen_phred(unsigned long len)
     
     /*
      *  FIXME: Generate a more realistic distribution than uniform
+     *  For now, generate mostly good data, PHRED 25+, in blocks with
+     *  the same score
      */
-    for (c = 0; c < len;)
+    for (c = 0; c < len - 4;)
     {
 	reps = random() % (len / 2);
-	ch = random()%40 + 33;
-	while ( (reps > 0) && (c < len) )
+	ch = 33 + 25 + random() % 15;
+	while ( (reps > 0) && (c < len - 4) )
 	{
 	    putchar(ch);
 	    --reps;
 	    ++c;
 	}
+    }
+    
+    /*
+     *  Let quality dip and vary for the last few bases like typical
+     *  Illumina data
+     */
+    while ( c++ < len )
+    {
+	ch = 33 + 15 + random() % 25;
+	putchar(ch);
     }
 }
 
@@ -301,8 +317,13 @@ int     gen_reads(int argc, char *argv[], fast_t file_type)
 void    usage(char *argv[])
 
 {
-    fprintf(stderr, "Usage: %s fasta|fastq reads length\n", argv[0]);
-    fprintf(stderr, "       %s sam|vcf chromosomes lines_per_chromosome\n",
+    fprintf(stderr,
+	    "Usage: %s fasta|fastq reads length\n", argv[0]);
+    fprintf(stderr,
+	    "       %s vcf chromosomes lines_per_chromosome\n",
+	    argv[0]);
+    fprintf(stderr,
+	    "       %s sam chromosomes lines_per_chromosome length\n",
 	    argv[0]);
     exit(EX_USAGE);
 }
