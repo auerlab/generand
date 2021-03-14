@@ -73,7 +73,7 @@ int     gen_vcf(int argc, char *argv[])
 		    chr,
 		    ref,
 		    alt,
-		    samples = 1,
+		    samples,
 		    c,
 		    qual,
 		    ref_ad,
@@ -84,7 +84,7 @@ int     gen_vcf(int argc, char *argv[])
 		    pos,
 		    max_call_separation = 1000;
 
-    if ( argc != 4 )
+    if ( argc != 5 )
 	usage(argv);
     
     chromosomes = strtoul(argv[2], &end, 10);
@@ -92,6 +92,10 @@ int     gen_vcf(int argc, char *argv[])
 	usage(argv);
     
     calls_per_chromosome = strtoul(argv[3], &end, 10);
+    if ( *end != '\0' )
+	usage(argv);
+    
+    samples = strtoul(argv[4], &end, 10);
     if ( *end != '\0' )
 	usage(argv);
     
@@ -111,7 +115,7 @@ int     gen_vcf(int argc, char *argv[])
 		alt = bases[random() % 4];
 	    while ( alt == ref );
 	    qual = random() % 60;
-	    printf("%u\t%lu\t%s\t%c\t%c\t%u\t%s\t%s\t%s",
+	    printf("chr%u\t%lu\t%s\t%c\t%c\t%u\t%s\t%s\t%s",
 		    chr, pos, id, ref, alt, qual, filter, info, format);
 	    for (c = 0; c < samples; ++c)
 	    {
@@ -320,7 +324,7 @@ void    usage(char *argv[])
     fprintf(stderr,
 	    "Usage: %s fasta|fastq reads length\n", argv[0]);
     fprintf(stderr,
-	    "       %s vcf chromosomes lines_per_chromosome\n",
+	    "       %s vcf chromosomes lines_per_chromosome samples\n",
 	    argv[0]);
     fprintf(stderr,
 	    "       %s sam chromosomes lines_per_chromosome length\n",

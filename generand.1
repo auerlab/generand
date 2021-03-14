@@ -1,0 +1,63 @@
+.TH GENERAND 1
+.SH NAME    \" Section header
+.PP
+
+generand \- Generate random genomics data in various formats
+
+\" Convention:
+\" Underline anything that is typed verbatim - commands, etc.
+.SH SYNOPSIS
+.PP
+.nf 
+.na
+generand fasta sequences sequence-length
+generand fastq sequences sequence-length
+generand sam chromosomes alignments-per-chromosome sequence-length
+generand vcf chromosomes calls-per-chromosome samples
+.ad
+.fi
+
+\" Optional sections
+.SH "PURPOSE"
+
+.B generand
+is a simple program to rapidly generate random genomics data
+streams in common formats such as FASTA, FASTQ, SAM, and VCF.
+
+This may be useful for generating very short examples for academic purposes
+or large streams for testing and benchmarking genomics programs.
+
+.SH "DESCRIPTION"
+
+.B generand fast[aq] sequences sequence-length
+generates a FASTA or FASTQ stream of 
+"sequences" sequences, each of length "sequence-length".  The sequence
+content is random with a uniform distribution of bases, so that GC content
+should be very close to 50%.
+
+PHRED scores in FASTQ streams are generated in blocks of equal scores and
+are mostly high-quality.  The last few scores are lower quality and
+independent to simulate Illumina sequencing, where quality tends to drop
+near the end of each read.
+
+.B generand sam chromosomes alignments-per-chromosome sequence-length
+generates a SAM stream with chromosomes * alignments-per-chromosome total
+alignments.  It outputs increasing indexes for QNAME and CHROM, randomly
+increasing POS, random QUAL scores, and random sequences and PHRED scores
+as stated for FASTQ above.
+
+.B generand vcf chromosomes calls-per-chromosome samples
+generates a VCF stream with chromosomes * calls-per-chromosome calls.
+It outputs chromosomes with increasing indexes, randomly increasing POS,
+uniformly random REF and ALT, uniformly random QUAL scores, and random
+sample columns including GT (genotype), AD (allelic depth) and DP (depth).
+REF counts are always >= ALT counts in the AD data and DP = REF count + ALT
+count.
+
+.SH "SEE ALSO"
+bcftools, fastqc, samtools, vcftools
+
+.SH AUTHOR
+.nf
+.na
+J. Bacon

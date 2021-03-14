@@ -60,6 +60,7 @@ LOCALBASE   ?= /usr/local
 
 # Install in /usr/local, unless defined by the parent Makefile, the
 # environment, or a command line option such as PREFIX=/opt/local.
+DESTDIR     ?= .
 PREFIX      ?= ${LOCALBASE}
 MANPREFIX   ?= ${PREFIX}
 
@@ -155,8 +156,7 @@ realclean: clean
 install: all
 	${MKDIR} -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${PREFIX}/man/man1
 	${INSTALL} -s -m 0555 ${BIN} ${DESTDIR}${PREFIX}/bin
-
-# ${INSTALL} -m 0444 ${MAN} ${DESTDIR}${MANPREFIX}/man/man1
+	${INSTALL} -m 0444 ${MAN} ${DESTDIR}${MANPREFIX}/man/man1
 
 ############################################################################
 # Remove all installed files
