@@ -140,8 +140,7 @@ int     gen_vcf(int argc, char *argv[])
 int     gen_sam(int argc, char *argv[])
 
 {
-    char    *qname = "*",           // Unknown template for now
-	    rname[RNAME_MAX + 1],   // Generated from chromosome loop var
+    char    rname[RNAME_MAX + 1],   // Generated from chromosome loop var
 	    *cigar = "*",
 	    *rnext = "*",
 	    *sam_version = "1.6",
@@ -152,7 +151,8 @@ int     gen_sam(int argc, char *argv[])
 		    tlen = 0,       // Undefined for now
 		    chromosomes,
 		    chr;
-    unsigned long   pos = 0,
+    unsigned long   pos,
+		    seq,
 		    alignments_per_chromosome,
 		    alignment,
 		    max_alignment_separation = 1000,
@@ -175,15 +175,15 @@ int     gen_sam(int argc, char *argv[])
     
     printf("@HD VN:%s SO:coordinate\n", sam_version);
     srandom(time(NULL));
-    for (chr = 1; chr <= chromosomes; ++chr)
+    for (chr = 1, seq = 1; chr <= chromosomes; ++chr)
     {
 	for (alignment = 0, pos = 0; alignment < alignments_per_chromosome; ++alignment)
 	{
 	    snprintf(rname, RNAME_MAX, "chr%u", chr);
 	    pos += random() % max_alignment_separation;
 	    mapq = random() % 40;
-	    printf("%s\t%u\t%s\t%lu\t%u\t%s\t%s\t%u\t%u\t",
-		    qname, flag, rname, pos, mapq, cigar, rnext,
+	    printf("seq%lu\t%u\t%s\t%lu\t%u\t%s\t%s\t%u\t%u\t",
+		    seq++, flag, rname, pos, mapq, cigar, rnext,
 		    pnext, tlen);
 	    gen_seq(seq_len);
 	    putchar('\t');
