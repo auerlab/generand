@@ -17,8 +17,11 @@ situations.
 # Usage
 
 generand fasta sequences sequence-length
+
 generand fastq sequences sequence-length
+
 generand sam chromosomes alignments-per-chromosome sequence-length
+
 generand vcf chromosomes calls-per-chromosome samples
 
 # Description
