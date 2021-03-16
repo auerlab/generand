@@ -7,7 +7,7 @@ Output data is completely random and suitable for basic testing and
 benchmarking of new programs, or for quickly generating small samples for
 academic purposes.  For FASTA/FASTQ, the data generated are "ideal", in
 that each base content is close to 25%, quality stores are good, etc.
-Try running fastq on generand fastq output to see for yourself.
+Try running fastqc on generand fastq output to see for yourself.
 
 Generand is especially useful for generating large test inputs on-the-fly
 so that they need not be manually downloaded, generated and/or stored. Hence,
