@@ -129,6 +129,8 @@ ${BIN}: ${OBJS}
 # If Makefile.depend does not exist, "touch" it before running "make depend"
 include Makefile.depend
 
+.PHONY: depend clean realclean install uninstall help
+
 ############################################################################
 # Self-generate dependencies the old-fashioned way
 # Edit filespec and compiler command if not using just C source files
