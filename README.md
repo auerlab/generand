@@ -1,13 +1,17 @@
 # generand
 
-Generand is a simple and fast tool to generate random genomic data in
-FASTA/FASTQ, SAM, or VCF format, output to the standard output.
+Generand is a simple and fast tool for generating random genomic data in
+FASTA/FASTQ, SAM, or VCF format.
 
 Output data is completely random and suitable for basic testing and
-benchmarking of new programs, or for quickly generating small samples for
-academic purposes.  For FASTA/FASTQ, the data generated are "ideal", in
-that each base content is close to 25%, quality stores are good, etc.
-Try running fastqc on generand fastq output to see for yourself.
+benchmarking of new programs, or for quickly generating samples for academic
+purposes.  It was developed out of a need to test auerlab/vcf-split and
+auerlab/ad2vcf on small, customized, non-PHI inputs and to benchmark them
+on very large random inputs without having to store them in the repo.
+
+For FASTA/FASTQ, the data generated are "ideal", with each base content near
+25%, high quality scores, etc. Try running fastqc on generand fastq output to
+see for yourself.
 
 Generand is especially useful for generating large test inputs on-the-fly
 so that they need not be manually downloaded, generated and/or stored. Hence,
