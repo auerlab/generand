@@ -150,7 +150,6 @@ int     gen_sam(int argc, char *argv[])
 
 {
     char    rname[RNAME_MAX + 1],   // Generated from chromosome loop var
-	    *cigar = "*",
 	    *rnext = "*",
 	    *sam_version = "1.6",
 	    *end;
