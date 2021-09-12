@@ -56,11 +56,10 @@ OBJS    = generand.o
 
 # Where to find local libraries and headers.  For MacPorts, override
 # with LOCALBASE=/opt/local.
-LOCALBASE   ?= /usr/local
+LOCALBASE   ?= ../local
 
 # Install in /usr/local, unless defined by the parent Makefile, the
 # environment, or a command line option such as PREFIX=/opt/local.
-DESTDIR     ?= .
 PREFIX      ?= ${LOCALBASE}
 MANPREFIX   ?= ${PREFIX}
 
