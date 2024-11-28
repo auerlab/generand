@@ -65,6 +65,7 @@ PREFIX      ?= ../local
 LOCALBASE   ?= ${PREFIX}
 
 MANPREFIX   ?= ${PREFIX}
+MANDIR      ?= ${MANPREFIX}/share/man
 
 ############################################################################
 # Build flags
@@ -158,9 +159,9 @@ realclean: clean
 # Install all target files (binaries, libraries, docs, etc.)
 
 install: all
-	${MKDIR} -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${PREFIX}/man/man1
+	${MKDIR} -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${MANDIR}/man1
 	${INSTALL} -s -m 0555 ${BIN} ${DESTDIR}${PREFIX}/bin
-	${INSTALL} -m 0444 ${MAN} ${DESTDIR}${MANPREFIX}/man/man1
+	${INSTALL} -m 0444 ${MAN} ${DESTDIR}${MANDIR}/man1
 
 ############################################################################
 # Remove all installed files
