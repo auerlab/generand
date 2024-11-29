@@ -78,6 +78,7 @@ MANDIR      ?= ${MANPREFIX}/share/man
 # Defaults that should work with GCC and Clang.
 CC          ?= cc
 CFLAGS      ?= -Wall -g -O
+CFLAGS      += -DVERSION=\"`./version.sh`\"
 
 # Link command:
 # Use ${FC} to link when mixing C and Fortran

@@ -33,10 +33,14 @@ int     gen_reads(int argc, char *argv[], fast_t file_type);
 int     main(int argc,char *argv[])
 
 {
-    if ( argc < 3 )
+    if ( (argc == 2) && (strcmp(argv[1],"--version") == 0) )
+    {
+	printf("fasda %s\n", VERSION);
+	return EX_OK;
+    }
+    else if ( argc < 3 )
 	usage(argv);
-
-    if ( strcmp(argv[1], "vcf") == 0 )
+    else if ( strcmp(argv[1], "vcf") == 0 )
 	return gen_vcf(argc, argv);
     else if ( strcmp(argv[1], "sam") == 0 )
 	return gen_sam(argc, argv);
@@ -332,7 +336,8 @@ void    usage(char *argv[])
 
 {
     fprintf(stderr,
-	    "Usage: %s fasta|fastq reads length\n", argv[0]);
+	    "Usage: %s --version\n"
+	    "       %s fasta|fastq reads length\n", argv[0], argv[0]);
     fprintf(stderr,
 	    "       %s vcf chromosomes lines_per_chromosome samples\n",
 	    argv[0]);
